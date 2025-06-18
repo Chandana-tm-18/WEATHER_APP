@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            text-align: center;
+            padding-top: 100px;
+        }
+        .weather-container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            width: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+        .weather-img {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-container">
+        <h1>Weather App</h1>
+        <input type="text" id="locationInput" placeholder="Enter location">
+        <button onclick="getWeather()">Get Weather</button>
+        <div class="result" id="weatherResult"></div>
+        <div class="weather-img" id="weatherImage"></div>
+    </div>
+
+    <script>
+        async function getWeather() {
+            const location = document.getElementById("locationInput").value;
+            const apiKey = "ffc710533346472cb1360601251806";
+            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}&aqi=no`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById("weatherResult").innerHTML = `<span style='color: red;'>${data.error.message}</span>`;
+                    document.getElementById("weatherImage").innerHTML = '';
+                    return;
+                }
+
+                const { temp_c, condition, wind_kph, humidity } = data.current;
+                const weatherText = `
+                    <strong>Location:</strong> ${data.location.name}, ${data.location.country}<br>
+                    <strong>Temperature:</strong> ${temp_c} °C<br>
+                    <strong>Condition:</strong> ${condition.text}<br>
+                    <strong>Wind:</strong> ${wind_kph} kph<br>
+                    <strong>Humidity:</strong> ${humidity}%
+                `;
+
+                document.getElementById("weatherResult").innerHTML = weatherText;
+                document.getElementById("weatherImage").innerHTML = `<img src="https:${condition.icon}" alt="Weather icon">`;
+            } catch (error) {
+                document.getElementById("weatherResult").innerHTML = `<span style='color: red;'>Error fetching data</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
